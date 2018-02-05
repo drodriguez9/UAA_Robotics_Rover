@@ -1,0 +1,294 @@
+ 
+Software Requirements Specification for Autonomous Robot Route Finding, Navigation, and Visualization
+Version 1.0 approved
+Prepared by David Rodriguez, Brendan Stassel, and Neil Reutov
+26 January 2018
+
+Table of Contents
+	Binding Contract	4
+	INTRODUCTION	5
+		Purpose	5
+		Document Conventions	5
+		Intended Audience and Reading Suggestions	5
+		Product Scope	5
+		References	5
+	OVERALL DESCRIPTION	6
+		Product Perspective	6
+		User Classes and Characteristics	6
+		Operating Environment	6
+		User Documentation	7
+		Assumptions and Dependencies	7
+	EXTERNAL INTERFACE REQUIREMENTS	7
+		User Interfaces	7
+		Hardware Interfaces	8
+		Software Interfaces	8
+		Communications Interfaces	8
+	SYSTEM FEATURES	9
+		Enable/Disable Autonomous Program	9
+			Description and Priority	9
+			Stimulus/Response Sequences	9
+			Functional Requirements	9
+		Position of the Target Location using GPS	9
+			Description and Priority	9
+			Stimulus/Response Sequences	9
+			Functional Requirements	9
+		Show a Flag Determining that the Object has been Located (Tennis Ball)	9
+			Description and Priority	9
+			Stimulus/Response Sequences	10
+			Functional Requirements	10
+		Search Pattern for Locating Target Object (Tennis Ball)	10
+			Description and Priority	10
+			Stimulus/Response Sequences	10
+			Functional Requirements	10
+		Obstacle Navigation	10
+			Description and Priority	10
+			Stimulus/Response Sequences	10
+			Functional Requirements	10
+		Video Feed	11
+			Description and Priority	11
+			Stimulus/Response Sequences	11
+			Functional Requirements	11
+	Other Nonfunctional Requirements	12
+		Performance Requirements	12
+			Identification of tennis ball	12
+			Route pathfinding with obstacle avoidance	12
+			Stall detection with basic recovery	12
+		Safety Requirements	13
+		Security Requirements	13
+		Software Quality Attributes	13
+		Business Rules	13
+	Other Requirements	13
+
+
+
+Revision History
+Name: Brendan Stassel
+Date: 02/04/2018
+Reason For Changes: First draft of document.
+Version: 1.0
+
+
+
+The delivered Autonomous Robot Route Finding, Navigation, and Visualization software will interface with the software provided by the UAA Robotics Club in order to meet four main objectives:
+Autonomously identify a yellow tennis ball through the ZED camera.
+Autonomously navigate the robot around obstacles and determine a path to the identified yellow tennis ball.
+Autonomously detect a stall and attempt recovery from the stall.
+Pass the ZED video feed to the UAA Robotics Club software.
+
+1) The software will identify a standard yellow tennis ball only  in sunny or cloudy conditions. The background of the tennis ball will only be a red desert with sparse green foliage. The software will identify a standard yellow tennis ball between 1 and 10 meters from the ZED camera.
+
+2) The software will navigate the robot across the desert terrain after the input of accurate GPS coordinates of the tennis ball objective. The navigation software will avoid obstacles too large for the robot to drive over and cliffs too tall for the robot to drive down. The navigation software will not identify types of terrain, such as silt, sand, gravel, water, etc. The navigation software will put the safety of the other robot systems as its highest priority, followed second by the successful navigation to the tennis ball objective.
+
+3) The software will detect when a stall occurs. A stall is identified as drive commands being sent to the UAA Robotics Software and the robot’s on board sensors not detecting any movement. When a stall is detected, the software will attempt to recover from the stall by backing up. If a stall is still detected, the autonomous navigation software will send a stall notification to the UAA Robotics Software and stop the autonomous navigation software.
+
+4) The software will provide an augmented video feed of the ZED camera to the UAA Robotics Software. The feed will include a visual marker to show what the software is currently identifying as the tennis ball.
+
+The Autonomous Robot Route Finding, Navigation, and Visualization software is further described in detail in the rest of this Software Requirement Specification document.
+
+Contractor: David Rodriguez		Contractor: Neil Reutov		Contractor: Brendan Stassel
+
+
+
+Sponsor: Dr. Kenrick Mock		Sponsor: UAA Robotics Club
+
+
+
+INTRODUCTION
+
+Purpose 
+	These requirements pertain to the autonomous route finding, navigation, and visualization aspect of the rover challenge robot for University of Alaska Anchorage Robotics Club. This document covers version 1.0 of the software. This system will be integrated into a larger control system that is not in the scope of this document.
+
+Document Conventions
+	There is no special formatting to take note of. Each major feature will have its own priority and the detailed description will explain the priorities within each major feature.
+
+Intended Audience and Reading Suggestions
+	This document is designed for developers, users, and testers of the UAA Robotics Club rover. This SRS contains a detailed description of the autonomous route finding, navigation, and visualization. It can be read front to back or in any order the reader desires. It is a top down approach, which first covers the overall description, it then describes the external interface, hardware, software, and communications. It describes the main system features and nonfunctional requirements. It ends with several appendices that can be useful to the reader.
+
+Product Scope
+	This software will allow a robot to autonomously navigate and locate a tennis ball within a desert environment. The purpose is to demonstrate the ability of the robot to successfully accomplish navigation and visual location without the need for a human to direct its actions. This will be a proof of concept for an unmanned mars rover. This software will be a base for future teams to build upon, we will be providing basic navigation and location functionality.
+
+References
+	Requirements and Guidelines for the Robot, University Rover Challenge Mars Society 2018
+	http://urc.marssociety.org/home/requirements-guidelines
+
+
+
+OVERALL DESCRIPTION
+
+Product Perspective
+	This SRS is defining a system for autonomous route finding, navigation, and visualization to be used in a larger system to control a rover. There are comparable systems but this will be a self-contained, purpose built design specifically for UAA Robotics Club. This system will integrate with the larger control system though a series of commands, which are yet to be determined. It will also interface with a GPS to determine where it is and where it needs to go.
+
+Product Functions
+	The four main functions will be:
+	To identify a yellow tennis ball using the ZED camera
+	To identify obstacles and navigate around them to the yellow tennis ball
+	Stall detection
+	Passing the video feed to the larger control system
+
+User Classes and Characteristics
+	locate_tennis_ball()
+	generate_map()
+	plot_course()
+	move(direction)
+	check_for_stall()
+
+Operating Environment
+	The rover will be designed for operation with an outside environment in mind, specifically for a desert in the daytime. Rain and snow will not be planned for though wind and clouds are something we will take into consideration while building our software. Our SRS will run on a Jetson TK1 running Ubuntu 14.04.5 and will integrate with a control system provided by our client. It will control a ZED stereoscopic camera and issue commands to control the rover. We also intend to use an accelerometer and GPS for guiding navigation and feedback. 
+
+Design and Implementation Constraints
+	The design will be limited in the fact that the hardware and software for the robot and communication tools must cost less than $17,500. The system will be limited by the hardware chosen by the client which is a Jetson TK1. The Jetson TK1 has 2GB of memory and a GPU containing 192 cuda cores. The Jetson TK1 is restricted to Ubuntu 14.04.5 or earlier versions. The UAA Robotics Club will be required to maintain the software after delivery. We will provide detailed commentary to our code to facilitate their ability to maintain the software long-term and further develop the system in the future.
+
+User Documentation
+	Our users are software developers and our code documentation will be their guide. We will give the lead software developer a tour of the software and our code base. However, we will also provide a how to for toggling the autonomous system on and off as well as how to provide the next set of GPS coordinates for the robot.
+
+Assumptions and Dependencies
+	We are assuming that we can patch together a final project using various libraries, such as the OctoMap library, OpenCV libraries, Jetson TK1 SDK, and our own code. We are assuming our code will integrate easily with the software provided by the UAA Robotics Club. We will assume the hardware we have is capable of supporting our code. We are assuming the we will be able to test and debug our autonomous system with a drivable robot before April 2018.
+
+
+
+EXTERNAL INTERFACE REQUIREMENTS
+
+User Interfaces
+	We will not be creating a GUI of our own for the autonomous system, but will interface the input and on/off commands for the driving system with the UAA Robotics Club base station GUI. The autonomous driving system will send commands to the robot drive systems through an API provided to us by the UAA Robotics Club.
+
+Hardware Interfaces
+	[Image of robot electrical system]
+	Above is the current electrical system for the UAA Robotics club’s robot. The autonomous system will be programmed on the TK1 and receive input from the ZED camera system, GPS, Sensors (through Arduino), and Comms base. It will provide output to the autonomous notifications LEDs and drive system motor controls (through LLC -> Arduino). The ZED camera system will use USB 3.0, the Comms Base will use [INSERT HERE], and the LLC/Arduinos will use RS-232 serial connections.
+
+Software Interfaces
+	We will use the Jetson TK1 SDK to create the autonomous system. Ubuntu 14.04.5 x64 (Trusty Tahr) is the required OS for the Jetson TK1. The ZED SDK on Jetson TK1 v1.2 will also be installed on the Jetson TK1. The code will mostly be Python3 and OpenCV. OpencCV and NVIDIA VisionWorks libraries will provide functionality identifying the tennis ball and obstacles in the environment. Python3 code will integrate the autonomous system with the API for the robot base station.
+
+Communications Interfaces
+	This product has no encryption or communication functions outside passing notifications and errors to the Comms Base.
+
+
+
+SYSTEM FEATURES
+
+	The following is information about features that the client requested to be included in the overall design of the system.
+
+Enable/Disable Autonomous Program
+	Description and Priority
+	A method for shutting down the program or starting it up, without it interfering with regular operations of the robot.
+	Priority: Low
+
+	Stimulus/Response Sequences
+	The design for this feature will be a button on the regular operation or software of the robot’s system.
+
+	Functional Requirements
+	TBD
+
+Position of the Target Location using GPS
+	Description and Priority
+	A method for finding the location of the target using GPS.
+	Priority: Med
+
+	Stimulus/Response Sequences
+	Have an input at startup for different modes of the program with one of them being location of tennis ball using GPS coordinates.
+
+	Functional Requirements
+	REQ-1: An option to enable GPS coordinates.
+	REQ-2: Input parameter for the GPS coordinates.
+
+Show a Flag Determining that the Object has been Located (Tennis Ball)
+	Description and Priority
+	The program have some sort of indication that the target object has been located in current video feed.
+	Priority: High
+
+	Stimulus/Response Sequences
+	There aren’t any needed user actions for this feature. There will be a system response for locating the target object. It might be some text that appears on the video feed, a sound from the robot itself, or even a light on the robot that lights up when it successfully finds the target object.
+
+	Functional Requirements
+	REQ-1: Some sort of indication of successfully locating the object. For example: text that appears on the video feed, a sound from the robot, or a light from the robot.
+	REQ-2: Algorithm for determining if object found is indeed the required object.
+
+Search Pattern for Locating Target Object (Tennis Ball)
+	Description and Priority
+	A set program that determines how to find the object when the robot gets to the target location.
+	Priority: Med
+
+	Stimulus/Response Sequences
+	No needed user actions besides the original GPS coordinates. The system response is the need to determine how far away from the target location the robot can go in the given search pattern.
+
+	Functional Requirements
+	REQ-1: GPS coordinates to create a “boundary” around the target location.
+	REQ-2: The search algorithm for locating the target object, and for terminating said algorithm when target object is found.
+
+Obstacle Navigation
+	Description and Priority
+	An algorithm for navigating around obstacles and determining if said obstacle was simple enough to go through instead.
+	Priority: High
+
+	Stimulus/Response Sequences
+	This feature could either be a user action, in the way that a human could control the robot around said obstacles, or by an algorithm that self-determines if the area has an obstacle and how to go about avoiding it.
+
+	Functional Requirements
+	REQ-1: Option to let a human control it. 
+	REQ-2: Let the algorithm for determining obstacles proceed without user input.
+
+Video Feed
+	Description and Priority
+	Output video feed from the ZED camera provided. Use the video feed for determining obstacles and locating the target object, this ties in with system requirements 3, 4, and 5.
+	Priority: High
+
+	Stimulus/Response Sequences
+	There is no need for user actions regarding this feature. The algorithms required, such as the Obstacle Navigation Algorithm, Search Pattern Algorithm, and the Tennis Ball Determining Algorithms, will make use of the video feed the ZED camera will provide. Also, the video feed will be outputted for users to view during the runtime of the robot.
+
+	Functional Requirements
+	TBD
+
+
+
+OTHER NONFUNCTIONAL REQUIREMENTS
+
+Performance Requirements
+	Identification of tennis ball
+	The autonomous system will successfully [99% ??] identify a standard yellow tennis ball against a red desert and green brush background in both open sunlight and cloudy weather. The system will pass notification to the Comms Base that the tennis ball is located within 2 meters in front of the robot.
+
+Route pathfinding with obstacle avoidance
+	After inputting of the GPS coordinates for a tennis ball objective, the autonomous system will navigate the robot from its current position to within 2 meters of the tennis ball objective. This “as the crow flies” distance will not exceed 2 kilometers. Obstacles along the path to the tennis ball will be navigated around.
+	Obstacles are identified as:
+	Rocks, walls, other “hard” terrain features; [height TBD].
+	Ledges with drops greater than [0.5] meters.
+	Brush, bushes, foliage, other “soft” terrain features; [height TBD].
+	Obstacle avoidance will NOT determine terrain type; dirt, water, silt, gravel, sand, etc.
+	Route pathfinding and traversal to the first tennis ball objective will take no longer than 1 hour.
+
+Stall detection with basic recovery
+	The system must be able to identify when it is sending commands to the drive system and the robot is not actually moving. After a basic recovery operation, the system must identify as “stuck” and stop the autonomous driving system.
+	The autonomous system will identify when commands are being sent to the drive system and the robot is not moving according to those commands. For example, move(forward) is sent to the drive system but the robot register no movement, i.e. a stall. The system will attempt a preprogrammed recovery procedure:
+	Move(backwards 1 meter) > check_for_stall()
+	No stall > identify 1 meter^2 area in front of robot as  “bad terrain” and reroute
+	Stall > move(rotate 45 deg CW) > move(backwards 1 meter) > check_for_stall()
+		No stall > identify 1 meter^2 area to 45 deg CCW of robot as “bad terrain” and reroute
+		Stall > move(rotate 90 deg CCW) > move backwards 1 meter > check_for_stall()
+			No stall > identify 1 meter^2 area to 45 CW of robot as “bad terrain” and reroute
+			Stall > TBD
+
+Safety Requirements
+	Safety for this autonomous system ONLY pertains to the safety of the robot. The autonomous system must not damage other robot systems. Examples are:
+	Do not damage the drive control motors during a stall.
+	Do not drive off ledges that while cause the robot to tip over.
+	Do not crash into obstacles that damage the robot systems.
+
+Security Requirements
+	There are no security requirements defined for this product.
+
+Software Quality Attributes
+	This product will be a “first draft” product. The focus on the autonomous system is to create basic functionality. This will not be a robust system that receives 100% in the competition. Coding will emphasize testability and maintainability. The product will allow the UAA Robotics club to test their robot in conditions and gather data on what better modifications need to be made for the second version of the autonomous software. The coding will also be verbose in comments to ensure future work on the autonomous system will have the lowest learning curve possible.
+
+Business Rules
+	No specific business rules are required for this product.
+
+Other Requirements
+	No other requirements are required for this product.
+
+APPENDIX A: Glossary
+	<Define all the terms necessary to properly interpret the SRS, including acronyms and abbreviations. You may wish to build a separate glossary that spans multiple projects or the entire organization, and just include terms specific to a single project in each SRS.>
+
+APPENDIX B: Analysis Models
+	<Optionally, include any pertinent analysis models, such as data flow diagrams, class diagrams, state-transition diagrams, or entity-relationship diagrams.>
+
+APPENDIX C: To Be Determined List
+	2.1 This system will integrate with the larger control system though a series of commands, which are yet to be determined.
+	3.2 ...the Comms Base will use [INSERT HERE]... (unknown protocol)
