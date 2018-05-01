@@ -6,14 +6,21 @@
 # https://www.pyimagesearch.com/2016/10/24/ubuntu-16-04-how-to-install-opencv/
 #####################################
 
+######################################
+# To mazimize performance on TX2,
+# run this command in terminal:
+# sudo ~/jetson_clock_sh
+######################################
+
 import cv2
+import math
+import numpy as np
+import sys
 import pyzed.camera as zcam
 import pyzed.defines as sl
 import pyzed.types as tp
 import pyzed.core as core
-import math
-import numpy as np
-import sys
+
 
 TENNIS_BALL_DIAMETER = 68.6 #millimeters
 
