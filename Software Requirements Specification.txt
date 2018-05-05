@@ -1,5 +1,5 @@
 Software Requirements Specification for Autonomous Robot Route Finding, Navigation, and Visualization
-Version 2.0 approved
+Version 3.0 approved
 Prepared by David Rodriguez, Brendan Stassel, and Neil Reutov
 5 May 2018
 
@@ -80,6 +80,10 @@ TABLE OF CONTENTS
 		6.2 Security Requirements
 		6.3 Software Quality Attributes
 		6.4 Business Rules
+	7. DESIGN DOCUMENTATION
+		7.1 System Schematic
+		7.2 Design Schematic
+		7.3 UI Schematic
 
 
 1. CONTRACT
@@ -300,3 +304,15 @@ Sponsor: Dr. Kenrick Mock		Sponsor: UAA Robotics Club
 
 	6.4 Business Rules
 		No specific business rules are required for this product.
+
+
+7. DESIGN DOCUMENTATION
+
+	7.1 System Schematic
+		See System_Schematic.pdf
+
+	7.2 Design Schematic
+		See Design_Schematic.pdf
+
+	7.3 UI Schematic
+		See UI.svg
