@@ -1,41 +1,45 @@
- 
 Software Requirements Specification for Autonomous Robot Route Finding, Navigation, and Visualization
 Version 2.0 approved
 Prepared by David Rodriguez, Brendan Stassel, and Neil Reutov
-25 February 2018
+5 May 2018
 
 Revision History
-Name: Neil Reutov, David Rodriguez, Brendan Stassel
+Date: 05/05/2018
+Name: Brendan Stassel
+Reason for Changes: Added missing table of contents entries. Removed mention of NVIDIA Visonworks libraries from document. Changed Jetpack version from 3.1 to 3.2.
+
 Date: 02/25/2018
+Name: Neil Reutov, David Rodriguez, Brendan Stassel
 Reason For Changes: Added references to UI, Design, and System schematics. Corrected errors throughout the document. Heavily revised section 5 and 6.
 Version: 2.0
 
 
 Date: 02/04/2018
+Name: Neil Reutov, David Rodriguez, Brendan Stassel
 Reason For Changes: First draft of document.
 Version: 1.0
 
 TABLE OF CONTENTS
 	1. CONTRACT
 	2. INTRODUCTION
-		2.1 Purpose
+		2.1	Purpose
 		2.2	Document Conventions
 		2.3	Intended Audience and Reading Suggestions
 		2.4	Product Scope
 		2.5	References
 	3. OVERALL DESCRIPTION
-		3.1	Product Perspective
-		3.2	User Classes and Characteristics
-		3.3	Operating Environment
-		3.4	User Documentation
-		4.5	Assumptions and Dependencies
+		3.1 Product Perspective
+		3.2 User Classes and Characteristics
+		3.3 Operating Environment
+		3.4 User Documentation
+		4.5 Assumptions and Dependencies
 	4. EXTERNAL INTERFACE REQUIREMENTS
-		4.1	User Interfaces
-		4.2	Hardware Interfaces
-		4.3	Software Interfaces
-		4.4	Communications Interfaces
+		4.1 User Interfaces
+		4.2 Hardware Interfaces
+		4.3 Software Interfaces
+		4.4 Communications Interfaces
 	5. SYSTEM FEATURES
-		5.1	Enable/Disable Autonomous Program
+		5.1 Enable/Disable Autonomous Program
 			5.1.1 Description and Priority
 			5.1.2 Stimulus/Response Sequences
 			5.1.4 Functional Requirements
@@ -59,6 +63,18 @@ TABLE OF CONTENTS
 			5.6.1 Description and Priority
 			5.6.2 Stimulus/Response Sequences
 			5.6.3 Functional Requirements
+		5.7 Tennis Ball Detection
+			5.7.1 Description and Priority
+			5.7.2 Stimulus/Response Sequences
+			5.7.3 Functional Requirements
+		5.8 Tennis Ball Search Pattern
+			5.8.1 Description and Priority
+			5.8.2 Stimulus/Response Sequences
+			5.8.3 Functional Requirements
+		5.9 Video Feed
+			5.9.1 Description and Priority
+			5.9.2 Stimulus/Response Sequences
+			5.9.3 Functional Requirements
 	6. OTHER NONFUNCTIONAL REQUIREMENTS
 		6.1 Safety Requirements
 		6.2 Security Requirements
@@ -79,7 +95,7 @@ Details of the four main objectives:
 
 	2) The software will identify a standard yellow tennis ball only in sunny or cloudy conditions. The background of the tennis ball will only be a red desert with sparse green foliage. The software will identify a standard yellow tennis ball between 1 and 10 meters from the ZED camera. Once the tennis ball is identified it will notify the user.
 
-	3) The software will detect when a stall occurs. A stall is identified as drive commands being sent to the UAA Robotics Software and the robot‚Äôs on board sensors not detecting any movement. When a stall is detected, the software will attempt to recover from the stall by backing up. If a stall is still detected, the autonomous navigation software will send a stall notification to the UAA Robotics Software and stop the autonomous navigation software.
+	3) The software will detect when a stall occurs. A stall is identified as drive commands being sent to the UAA Robotics Software and the robotís on board sensors not detecting any movement. When a stall is detected, the software will attempt to recover from the stall by backing up. If a stall is still detected, the autonomous navigation software will send a stall notification to the UAA Robotics Software and stop the autonomous navigation software.
 
 	4) The software will provide an augmented video feed of the ZED camera to the UAA Robotics Software. The feed will include a visual marker to show what the software is currently identifying as the tennis ball.
 
@@ -158,7 +174,7 @@ Sponsor: Dr. Kenrick Mock		Sponsor: UAA Robotics Club
 		The autonomous system will be programmed on the TX2 and receive input from the ZED camera system, GPS, Sensors (through Arduino), and Comms base. It will provide output to the autonomous notifications LEDs and drive system motor controls (through Arduino). The ZED camera system will use USB 3.0, the Comms Base will use an XRange antenna over TCP, and the Arduinos will use RS-232 serial connections.
 
 	4.3 Software Interfaces
-		We will use the Jetson TX2 SDK to create the autonomous system. Ubuntu 14.04.5 x64 (Trusty Tahr) is the required OS for the Jetson TX2. The ZED SDK on Jetson TX2 v3.1 (CUDA 9.0) will also be installed on the Jetson TX2. The code will mostly be Python3 and OpenCV. OpenCV and NVIDIA VisionWorks libraries will provide functionality identifying the tennis ball and obstacles in the environment. Python3 code will integrate the autonomous system with the API for the robot base station.
+		We will use the Jetson TX2 SDK to create the autonomous system. Ubuntu 14.04.5 x64 (Trusty Tahr) is the required OS for the Jetson TX2. The ZED SDK on Jetson TX2 v3.2 (CUDA 9.0) will also be installed on the Jetson TX2. The code will mostly be Python3 and OpenCV. OpenCV libraries will provide functionality identifying the tennis ball and obstacles in the environment. Python3 code will integrate the autonomous system with the API for the robot base station.
 
 	4.4 Communications Interfaces
 		A video stream from the ZED camera will be provided to the comms base station. The video feed will provide visual identification of the obstacles and tennis ball to the users. Also, notifications and errors will be passed on to the comms base station for the users to see.
@@ -220,7 +236,7 @@ Sponsor: Dr. Kenrick Mock		Sponsor: UAA Robotics Club
 			A stall is when the robot does not change position after a few seconds with the wheels spinning. This feature is a way of detecting that stall.
 			Priority: Low
 		5.5.2	Stimulus/Response Sequences
-			Stimulus: Position of robot doesn‚Äôt change after a few seconds of commands being sent to the driver control system.
+			Stimulus: Position of robot doesnít change after a few seconds of commands being sent to the driver control system.
 			Response: Proceed to stall recovery.
 			This feature detects a stall and then attempts a recovery. 
 		5.5.3	Functional Requirements
@@ -231,7 +247,7 @@ Sponsor: Dr. Kenrick Mock		Sponsor: UAA Robotics Club
 			An algorithm that attempts a stall recovery, either by reversing or changing direction of the robot.
 			Priority: Low
 		5.6.2	Stimulus/Response Sequences
-			Stimulus: Input from the Stall Detection feature i.e. the position of the robot doesn‚Äôt change after a few seconds.
+			Stimulus: Input from the Stall Detection feature i.e. the position of the robot doesnít change after a few seconds.
 			Response: Attempts a stall recovery, either by reversing or changing direction of the robot.
 			This feature attempts a recovery from a stall by input from the Stall Detection algorithm.
 		5.6.3	Functional Requirements
@@ -242,7 +258,7 @@ Sponsor: Dr. Kenrick Mock		Sponsor: UAA Robotics Club
 			The program have some sort of indication that the tennis ball has been located in current video feed.
 			Priority: High
 		5.7.2	Stimulus/Response Sequences
-			There aren‚Äôt any needed user actions for this feature. There will be a system response for locating the target object. It might be some text that appears on the video feed, a sound from the robot itself, or even a light on the robot that lights up when it successfully finds the target object.
+			There arenít any needed user actions for this feature. There will be a system response for locating the target object. It might be some text that appears on the video feed, a sound from the robot itself, or even a light on the robot that lights up when it successfully finds the target object.
 		5.7.3	Functional Requirements
 			REQ-1: ZED camera system is functional.
 	
@@ -253,7 +269,7 @@ Sponsor: Dr. Kenrick Mock		Sponsor: UAA Robotics Club
 		5.8.2	Stimulus/Response Sequences
 			No needed user actions besides the original GPS coordinates. The system response should determine how far away from the target location the robot can go using the Search Pattern Algorithm.
 		5.8.3	Functional Requirements
-			REQ-1: The inputted GPS coordinates to create a ‚Äúboundary‚Äù around the target location are accurate.
+			REQ-1: The inputted GPS coordinates to create a ìboundaryî around the target location are accurate.
 			REQ-2: GPS data from the robot is accurate.
 			Some errors that could occur would be if the tennis ball is outside the boundary of the search pattern, the GPS coordinates are incorrect, or the GPS device fails midway.
 	
@@ -280,7 +296,7 @@ Sponsor: Dr. Kenrick Mock		Sponsor: UAA Robotics Club
 		There are no security requirements defined for this product.
 
 	6.3 Software Quality Attributes
-		This product will be a ‚Äúfirst draft‚Äù product. The focus on the autonomous system is to create basic functionality. This will not be a robust system that receives 100% in the competition. Coding will emphasize the ability to be tested and maintained by the UAA Robotics club. The product will allow the UAA Robotics club to test their robot in conditions and gather data on what better modifications need to be made for the second version of the autonomous software. The coding will also be verbose in comments to ensure future work on the autonomous system will have the lowest learning curve possible.
+		This product will be a ìfirst draftî product. The focus on the autonomous system is to create basic functionality. This will not be a robust system that receives 100% in the competition. Coding will emphasize the ability to be tested and maintained by the UAA Robotics club. The product will allow the UAA Robotics club to test their robot in conditions and gather data on what better modifications need to be made for the second version of the autonomous software. The coding will also be verbose in comments to ensure future work on the autonomous system will have the lowest learning curve possible.
 
 	6.4 Business Rules
 		No specific business rules are required for this product.
