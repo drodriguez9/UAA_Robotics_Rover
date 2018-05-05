@@ -1,4 +1,3 @@
-README
 Contact Information:
     Name: Brendan Stassel
     Email: stasy.x@gmail.com
